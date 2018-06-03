@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# passwords ed
+credentials.py
+client_secret.json
