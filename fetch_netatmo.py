@@ -2,7 +2,8 @@ import pandas as pd
 from datetime import datetime
 
 import netatmo
-from credentials import NETATMO_ID, NETATMO_PASSWORD, NETATMO_SECRET, NETATMO_STATION_ID, NETATMO_USERNAME
+from credentials import (NETATMO_ID, NETATMO_PASSWORD, NETATMO_SECRET,
+                         NETATMO_STATION_ID, NETATMO_USERNAME)
 
 
 def netatmo_data():
@@ -18,12 +19,13 @@ def netatmo_data():
     module = ws.devices[0]
     module_data = [module['dashboard_data']] + [m['dashboard_data'] for m in module['modules']]
     data = pd.DataFrame(module_data)
-    data['datetime'] = data.time_utc.apply(datetime.fromtimestamp)
+    data['Datetime'] = data.time_utc.apply(datetime.fromtimestamp)
     # data['module_name'] = [module['module)name']0
-    data['module_name'] = [module['module_name']] + [m['module_name'] for m in module['modules']]
+    data['Name'] = [module['module_name']] + [m['module_name'] for m in module['modules']]
+    data['Type'] = 'Netatmo'
 
-    return data[['datetime', 'module_name', 'CO2', 'Humidity', 'Noise', 'Pressure', 'Temperature']]
+    return data[['Datetime', 'Type', 'Name', 'CO2', 'Humidity', 'Noise', 'Pressure', 'Temperature']]
 
 
 if __name__ == '__main__':
-    mdata, m = netatmo_data()
+    mdata = netatmo_data()
