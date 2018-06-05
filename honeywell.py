@@ -1,7 +1,10 @@
-from evohomeclient2 import EvohomeClient
 import json
-from credentials import HONEYWELL_PASSWORD, HONEYWELL_USERNAME
+
 import pandas as pd
+from evohomeclient2 import EvohomeClient
+
+from credentials import HONEYWELL_PASSWORD, HONEYWELL_USERNAME
+
 
 def get_honeywell_temps():
     client = EvohomeClient(HONEYWELL_USERNAME, HONEYWELL_PASSWORD)

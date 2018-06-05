@@ -29,7 +29,7 @@ def append_data(worksheet, time, data):
 
 def read_data(worksheet):
     df_data = pd.DataFrame(worksheet.get_all_records())
-    df_data.timestamp = df_data.timestamp.apply(datetime.fromtimestamp)
+    df_data.datetime = df_data.timestamp.apply(datetime.fromtimestamp)
     return df_data
 
 
