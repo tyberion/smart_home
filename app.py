@@ -6,6 +6,7 @@ from flask import Flask, render_template, request
 from sheets import ROW_TITLES
 
 import plotly
+from plotly import tools
 import plotly.graph_objs as go
 
 from manage_data import read_data
@@ -45,28 +46,41 @@ def graph():
 
     # Create a trace
     traces = []
+    titles = []
     for g, d in data.groupby('Name'):
         trace = go.Scatter(
             name=g,
             x=d.Datetime,
             y=d[graph_type],
+            marker={'color': '57A6C4'},
+            mode='lines',
         )
         if not d[graph_type].isnull().values.all():
             traces.append(trace)
+            titles.append(g)
 
-    layout = go.Layout(
-        title='Sensor Measurements',
-        yaxis=dict(
-            title=graph_type,
-            # range=[0, 40],
-        ),
-        xaxis=dict(
-            range=date_range,
-        ),
-        showlegend=True)
-    graph = go.Figure(data=traces, layout=layout)
-    graphJSON = json.dumps(graph, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('graph.html', graphJSON=graphJSON)
+    # layout = go.Layout(
+    #     title='Sensor Measurements',
+    #     yaxis=dict(
+    #         title=graph_type,
+    #         # range=[0, 40],
+    #     ),
+    #     xaxis=dict(
+    #         range=date_range,
+    #     ),
+    #     showlegend=True)
+    fig = tools.make_subplots(rows=len(traces), cols=1, shared_xaxes=True,
+                              specs=[[{}]] * len(traces), subplot_titles=titles)
+    for i, trace in enumerate(traces):
+        fig.append_trace(trace, i + 1, 1)
+    fig['layout'].update({
+        'height': 800,
+        'title': 'Sensor Measurements',
+        'showlegend': False,
+    })
+    # graph = go.Figure(data=traces, layout=layout)
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template('graph.html', graphJSON=graphJSON, sensors=ROW_TITLES[3:])
 
 
 if not app.debug:

@@ -1,25 +1,36 @@
 {% extends "layout.html" %}
 {% block title %}
-    <title>Graph</title>
+<title>Graph</title>
 {% endblock %}
 {% block head %}
 <style type="text/css">
-    .chart{
-        margin-top: 30px;
-        text-align: center;
-    }
+.chart{
+	margin-top: 30px;
+	text-align: center;
+}
 </style>
 {% endblock %}
 {% block content %}
-  <div id="chart" class="chart">
-  </div>
+<div id="chart" class="chart">
+</div>
+
+<div class="dropdown">
+	<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Sensor Type
+	</button>
+	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		{% for sensor in sensors %}
+		<a class="dropdown-item" href="/graph?type={{ sensor }}">{{ sensor }}</a>
+		{% endfor %}
+	</div>
+</div>
 {% endblock %}
 {% block footer %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script type="text/javascript">
-    var graphs = {{graphJSON | safe}};
-    Plotly.plot('chart',graphs,{});        
+	var graphs = {{graphJSON | safe}};
+Plotly.plot('chart',graphs,{});        
 </script>
 {% endblock %}
