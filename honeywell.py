@@ -1,13 +1,13 @@
 import pandas as pd
 from datetime import datetime
-from evohomeclient2 import EvohomeClient
+from evohomeclient import EvohomeClient
 
 from credentials import HONEYWELL_PASSWORD, HONEYWELL_USERNAME
 
 
 def get_honeywell_temps():
     client = EvohomeClient(HONEYWELL_USERNAME, HONEYWELL_PASSWORD)
-    temperature = list(client.temperatures())[0]
+    temperature = list(client.temperatures(force_refresh=True))[0]
     now = datetime.now()
     data = pd.DataFrame(temperature, index=[0])
     data = data.rename(columns={'temp': 'Temperature', 'name': 'Name', 'setpoint': 'Setpoint'})
