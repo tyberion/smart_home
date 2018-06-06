@@ -1,10 +1,10 @@
 from datetime import datetime
 
 import gspread
-import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 
-ROW_TITLES = ['Datetime', 'Type', 'Name', 'CO2', 'Humidity', 'Noise', 'Pressure', 'Temperature', 'Setpoint']
+ROW_TITLES = ['Datetime', 'Type', 'Name', 'CO2', 'Humidity',
+              'Noise', 'Pressure', 'Temperature', 'Setpoint']
 
 SCOPE = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
@@ -27,19 +27,13 @@ def append_data(worksheet, data):
     worksheet.append_row(data)
 
 
-def get_current_worksheet():
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', SCOPE)
+def get_current_worksheet(date=None):
+    client_secret = '/home/pi/source/smart_home/client_secret.json'
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(client_secret, SCOPE)
 
     gc = gspread.authorize(credentials)
     ss = gc.open('Smart Home')
 
-    now = datetime.now()
-    return get_date_worksheet(ss, now)
-
-
-if __name__ == '__main__':
-    wks = get_current_worksheet()
-    append_data(wks, [21])
-    df = read_data(wks)
-
-    print(df)
+    if date is None:
+        date = datetime.now()
+    return get_date_worksheet(ss, date)

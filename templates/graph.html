@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}
+    <title>Graph</title>
+{% endblock %}
+{% block head %}
+<style type="text/css">
+    .chart{
+        margin-top: 30px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+{% block content %}
+  <h1>Plotly chart demo</h1>
+  <div id="chart" class="chart">
+  </div>
+{% endblock %}
+{% block footer %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<!-- Latest compiled and minified plotly.js JavaScript -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript">
+    var graphs = {{graphJSON | safe}};
+    Plotly.plot('chart',graphs,{});        
+</script>
+{% endblock %}

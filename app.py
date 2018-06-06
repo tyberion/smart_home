@@ -1,43 +1,16 @@
-#----------------------------------------------------------------------------#
-# Imports
-#----------------------------------------------------------------------------#
-
 import logging
-import os
+import json
 from logging import FileHandler, Formatter
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 
-#----------------------------------------------------------------------------#
-# App Config.
-#----------------------------------------------------------------------------#
+import plotly
+import plotly.graph_objs as go
+
+from manage_data import read_data
 
 app = Flask(__name__)
 app.config.from_object('config')
-#db = SQLAlchemy(app)
-
-# Automatically tear down SQLAlchemy.
-'''
-@app.teardown_request
-def shutdown_session(exception=None):
-    db_session.remove()
-'''
-
-# Login required decorator.
-'''
-def login_required(test):
-    @wraps(test)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return test(*args, **kwargs)
-        else:
-            flash('You need to login first.')
-            return redirect(url_for('login'))
-    return wrap
-'''
-#----------------------------------------------------------------------------#
-# Controllers.
-#----------------------------------------------------------------------------#
 
 
 @app.route('/')
@@ -45,7 +18,44 @@ def home():
     return render_template('layout.html')
 
 
-# Error handlers.
+@app.route('/graph')
+def graph():
+    data = read_data()
+
+    # Create a trace
+    traces = []
+    for g, d in data.groupby('Name'):
+        trace = go.Scatter(
+            name=g,
+            x=d.Datetime,
+            y=d.Temperature,
+        )
+        traces.append(trace)
+
+    layout = go.Layout(
+        title='Sensor Measurements',
+        yaxis=dict(
+            title='Temperature',
+            range=[0, 40],
+        ),
+        xaxis=dict(
+        ),
+        showlegend=True)
+    graph = go.Figure(data=traces, layout=layout)
+    # graph = dict(
+    #     data=traces,
+    #     layout=dict(
+    #         title='Sensor Measurements',
+    #         yaxis=dict(
+    #             title='Temperature'
+    #         ),
+    #         xaxis=dict(
+    #             title='Time'
+    #         )
+    #     )
+    # )
+    graphJSON = json.dumps(graph, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template('graph.html', graphJSON=graphJSON)
 
 
 if not app.debug:
@@ -58,17 +68,6 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
-#----------------------------------------------------------------------------#
-# Launch.
-#----------------------------------------------------------------------------#
 
-# Default port:
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-
-# Or specify port manually:
-'''
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-'''
